@@ -1,0 +1,14 @@
+Evaluate the credibility of ALL the following sources for a research investigation.
+
+Sources:
+{sources_block}
+
+Return ONLY a valid JSON array — no markdown fences, no explanation.
+Each element should be:
+{{
+  "url": "<the source URL>",
+  "credibility_score": <float 0.0-1.0>,
+  "source_type": "<academic|news|blog|government|unknown>",
+  "is_paywalled": <bool>,
+  "reasoning": "<one sentence>"
+}}

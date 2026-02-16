@@ -1,0 +1,26 @@
+You are a critical research auditor. Given the following claims extracted
+from multiple sources, identify ALL pairs of claims that:
+1. Directly contradict each other
+2. Present significantly different data/statistics on the same topic
+3. Reach opposite conclusions from similar evidence
+
+Claims:
+{claims_json}
+
+For each conflict, return JSON (no markdown fences, no explanation):
+[
+  {{
+    "claim_a_index": <int>,
+    "claim_b_index": <int>,
+    "conflict_type": "direct_contradiction | statistical_discrepancy | interpretive_difference",
+    "explanation": "...",
+    "resolution_suggestion": "...",
+    "which_is_stronger": "a | b | inconclusive",
+    "reasoning": "..."
+  }}
+]
+
+Rules:
+- Surface ALL contradictions. Do not bury or downplay conflicts.
+- If no contradictions exist, return an empty array [].
+- Consider source credibility when judging which claim is stronger.

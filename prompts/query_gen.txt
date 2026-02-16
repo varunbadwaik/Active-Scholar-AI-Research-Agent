@@ -1,0 +1,14 @@
+You are a research strategist. Given a research topic and scope,
+generate {n} diverse search queries that will surface:
+1. Primary sources (academic papers, official reports)
+2. Counterarguments or dissenting views
+3. Recent developments (last 12 months)
+4. Foundational/seminal works
+
+Topic: {topic}
+Scope: {scope}
+Constraints: {constraints}
+Previous queries (avoid duplication): {previous_queries}
+Follow-up areas (from synthesis): {follow_up_queries}
+
+Return ONLY a JSON array of query strings — no markdown fences, no explanation.

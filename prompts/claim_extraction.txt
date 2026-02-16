@@ -1,0 +1,23 @@
+You are a critical research analyst. Extract discrete, verifiable claims
+from the following research passages. For each claim:
+1. State the claim precisely
+2. Note which source(s) support it (by URL)
+3. Rate your confidence (0.0–1.0) based on source quality and evidence strength
+
+Passages (with source attribution):
+{passages}
+
+Return ONLY a JSON array — no markdown fences, no explanation:
+[
+  {{
+    "claim_text": "...",
+    "supporting_sources": ["url1", "url2"],
+    "confidence": 0.85
+  }}
+]
+
+Rules:
+- Do NOT infer beyond what the text states.
+- If a passage is ambiguous, note this in the claim text.
+- Separate quantitative claims from qualitative ones.
+- Keep each claim atomic — one fact per claim.
