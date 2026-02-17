@@ -10,16 +10,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import time
 
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+
 
 from config import settings
 from state import DocumentChunk, ResearchState
@@ -31,12 +25,8 @@ logger = logging.getLogger(__name__)
 # ── Shared singletons (lazy-initialised) ─────────────────────────────────────
 
 _collection: VectorStore | None = None
-_embeddings: GoogleGenerativeAIEmbeddings | None = None
+_embeddings: HuggingFaceEmbeddings | None = None
 _splitter: RecursiveCharacterTextSplitter | None = None
-
-# ── Embedding rate limiter ───────────────────────────────────────────────────
-_embed_last_call_ts: float = 0.0
-_EMBED_INTERVAL = 2.0  # seconds between embedding API calls
 
 
 def _get_collection() -> VectorStore:
@@ -49,13 +39,13 @@ def _get_collection() -> VectorStore:
     return _collection
 
 
-def _get_embeddings() -> GoogleGenerativeAIEmbeddings:
+def _get_embeddings() -> HuggingFaceEmbeddings:
     global _embeddings
     if _embeddings is None:
-        _embeddings = GoogleGenerativeAIEmbeddings(
-            model=settings.embedding_model,
-            google_api_key=settings.google_api_key,
+        _embeddings = HuggingFaceEmbeddings(
+            model_name="all-MiniLM-L6-v2",
         )
+        logger.info("Local embedding model loaded: all-MiniLM-L6-v2")
     return _embeddings
 
 
@@ -75,26 +65,13 @@ def get_collection() -> VectorStore:
     return _get_collection()
 
 
-# ── Retry wrapper for embeddings ─────────────────────────────────────────────
+# ── Embedding helper (local model — no rate limits) ─────────────────────────
 
 
-@retry(
-    stop=stop_after_attempt(10),
-    wait=wait_exponential(multiplier=2, min=4, max=60),
-    retry=retry_if_exception_type(Exception),
-    reraise=True,
-)
 async def _embed_with_retry(text: str) -> list[float]:
-    """Embed text with rate-limiting and retry logic for 429 errors."""
-    global _embed_last_call_ts
-    now = time.monotonic()
-    elapsed = now - _embed_last_call_ts
-    if elapsed < _EMBED_INTERVAL:
-        await asyncio.sleep(_EMBED_INTERVAL - elapsed)
-    _embed_last_call_ts = time.monotonic()
-
+    """Embed text using local HuggingFace model. No API limits."""
     embedder = _get_embeddings()
-    return await embedder.aembed_query(text)
+    return await asyncio.to_thread(embedder.embed_query, text)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
