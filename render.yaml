@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: active-scholar
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.6"
+      - key: ACTIVE_SCHOLAR_GOOGLE_API_KEY
+        sync: false
+      - key: ACTIVE_SCHOLAR_TAVILY_API_KEY
+        sync: false
+      - key: ACTIVE_SCHOLAR_PRIMARY_MODEL
+        value: "gemini-2.5-flash"
+      - key: ACTIVE_SCHOLAR_FALLBACK_MODEL
+        value: "gemini-2.0-flash-lite"
+      - key: ACTIVE_SCHOLAR_EMBEDDING_MODEL
+        value: "models/gemini-embedding-001"
