@@ -199,7 +199,32 @@ async def synthesis_generate_report(state: ResearchState) -> dict:
         evidence_json=json.dumps(evidence_quality, indent=2),
     )
 
-    report_md = await llm_call(prompt)
+    try:
+        # Single attempt with timeout — if it fails, use fallback immediately
+        # (Don't go through the full retry loop for report generation)
+        import asyncio
+        from utils.llm import _get_client, _rate_limit
+        from config import settings as _settings
+
+        await _rate_limit()
+        model_name = _settings.primary_model
+        client = _get_client()
+
+        response = await asyncio.wait_for(
+            asyncio.to_thread(
+                client.models.generate_content,
+                model=model_name,
+                contents=prompt,
+            ),
+            timeout=90.0,  # 90 second hard timeout
+        )
+        report_md = response.text or ""
+        if not report_md.strip():
+            raise ValueError("Empty response from LLM")
+    except Exception as exc:
+        logger.error("Failed to generate report via LLM: %s", exc)
+        logger.info("Generating fallback deterministic report instead.")
+        report_md = _generate_fallback_report(state)
 
     # Compute overall confidence
     if claims:
@@ -252,3 +277,44 @@ async def synthesis_generate_report(state: ResearchState) -> dict:
         "report_metadata": report_metadata,
         "synthesis_complete": True,
     }
+
+
+def _generate_fallback_report(state: ResearchState) -> str:
+    """Generate a deterministic report from claims when LLM fails."""
+    topic = state["topic"]
+    claims = state.get("claims", [])
+    contradictions = state.get("contradictions", [])
+
+    lines = [
+        f"# Research Report: {topic}",
+        "\n> **Note:** This report was generated automatically from extracted claims due to high load on the AI synthesis engine.\n",
+        "## Key Findings",
+    ]
+
+    if not claims:
+        lines.append("No verificable claims were extracted for this topic.")
+    else:
+        # Group claims by some simple heuristic or just list them
+        for i, claim in enumerate(sorted(claims, key=lambda c: c.confidence, reverse=True), 1):
+            lines.append(f"### {i}. {claim.claim_text}")
+            lines.append(f"**Confidence:** {claim.confidence:.2f}")
+            if claim.supporting_sources:
+                lines.append("**Sources:**")
+                for src in claim.supporting_sources:
+                    lines.append(f"- {src}")
+            lines.append("")
+
+    if contradictions:
+        lines.append("## Conflicting Evidence")
+        for i, conflict in enumerate(contradictions, 1):
+            lines.append(f"### Conflict {i}")
+            lines.append(f"- **Claim A:** {conflict.get('claim_a', 'N/A')}")
+            lines.append(f"- **Claim B:** {conflict.get('claim_b', 'N/A')}")
+            lines.append(f"- **Status:** {conflict.get('which_is_stronger', 'Unknown')}")
+            lines.append("")
+
+    lines.append("## Sources Evaluated")
+    for src in state.get("search_results", []):
+        lines.append(f"- [{src.title}]({src.url}) (Credibility: {src.credibility_score})")
+
+    return "\n".join(lines)

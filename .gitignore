@@ -8,6 +8,13 @@ __pycache__/
 # Vector database persistence
 active_scholar_db/
 
+# Generated reports
+reports/
+
+# Virtual environment
+.venv/
+venv/
+
 # Logs
 *.log
 

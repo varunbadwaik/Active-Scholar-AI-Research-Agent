@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Active Scholar — AI Research Agent</title>
+  <meta name="description"
+    content="Autonomous AI research agent that searches, retrieves, analyses, and synthesises information into structured reports." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+  <div class="app-container">
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">
+          <div class="logo-inner"></div>
+        </div>
+        <span>Active Scholar <span class="badge">AI</span></span>
+      </div>
+
+      <div class="history-section">
+        <h3>History</h3>
+        <div id="historyList" class="history-list">
+          <div class="history-loading">Loading...</div>
+        </div>
+      </div>
+
+      <div class="api-status">
+        <div class="status-dot"></div>
+        <span class="status-text">Checking API...</span>
+      </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main-content">
+      <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+
+      <div class="content-wrapper">
+
+        <!-- Hero / Input Section -->
+        <section class="hero" id="heroSection">
+          <h1 class="hero-title">
+            <span class="hero-title-line">Research anything.</span>
+            <span class="hero-title-line gradient-text">Powered by AI.</span>
+          </h1>
+          <p class="hero-subtitle">Enter a topic and let Active Scholar autonomously search, evaluate, and synthesise a
+            comprehensive research report.</p>
+
+          <form class="search-form" id="researchForm">
+            <div class="input-group">
+              <div class="input-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <input type="text" id="topicInput" class="search-input"
+                placeholder="e.g. Impact of AI on climate change research" required autocomplete="off" />
+              <button type="submit" class="search-btn" id="searchBtn">
+                <span class="btn-text">Research</span>
+                <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="form-options">
+              <div class="select-group">
+                <label for="modeSelect">Mode</label>
+                <select id="modeSelect" class="select-input">
+                  <option value="quick" selected>⚡ Quick (~30s)</option>
+                  <option value="deep">🔬 Deep (~5min)</option>
+                </select>
+              </div>
+              <div class="select-group">
+                <label for="scopeSelect">Scope</label>
+                <select id="scopeSelect" class="select-input">
+                  <option value="narrow">Narrow</option>
+                  <option value="moderate" selected>Moderate</option>
+                  <option value="broad">Broad</option>
+                </select>
+              </div>
+              <div class="select-group">
+                <label for="roundsSelect">Rounds</label>
+                <select id="roundsSelect" class="select-input">
+                  <option value="1">1 round</option>
+                  <option value="2" selected>2 rounds</option>
+                  <option value="3">3 rounds</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <!-- Progress Section (hidden by default) -->
+        <section class="progress-section hidden" id="progressSection">
+          <div class="progress-card">
+            <div class="progress-header">
+              <div class="progress-title-row">
+                <h2 class="progress-title" id="progressTitle">Researching…</h2>
+                <span class="progress-badge running" id="progressBadge">Running</span>
+              </div>
+              <p class="progress-topic" id="progressTopic"></p>
+            </div>
+            <div class="progress-steps">
+              <div class="step" data-step="search">
+                <div class="step-indicator">
+                  <div class="step-dot"></div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                  <span class="step-label">Searching the web</span>
+                  <span class="step-detail">Generating queries &amp; evaluating sources</span>
+                </div>
+              </div>
+              <div class="step" data-step="ingest">
+                <div class="step-indicator">
+                  <div class="step-dot"></div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                  <span class="step-label">Ingesting documents</span>
+                  <span class="step-detail">Fetching, chunking &amp; embedding content</span>
+                </div>
+              </div>
+              <div class="step" data-step="analyze">
+                <div class="step-indicator">
+                  <div class="step-dot"></div>
+                  <div class="step-line"></div>
+                </div>
+                <div class="step-content">
+                  <span class="step-label">Analysing claims</span>
+                  <span class="step-detail">Extracting facts &amp; detecting contradictions</span>
+                </div>
+              </div>
+              <div class="step" data-step="report">
+                <div class="step-indicator">
+                  <div class="step-dot"></div>
+                </div>
+                <div class="step-content">
+                  <span class="step-label">Generating report</span>
+                  <span class="step-detail">Synthesising final structured report</span>
+                </div>
+              </div>
+            </div>
+            <div class="progress-timer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span id="elapsedTime">0:00</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Report Section (hidden by default) -->
+        <section class="report-section hidden" id="reportSection">
+          <div class="report-header">
+            <div class="report-header-left">
+              <h2 class="report-heading">Research Report</h2>
+              <span class="report-meta" id="reportMeta"></span>
+            </div>
+            <div class="report-actions">
+              <button class="action-btn" id="copyBtn" title="Copy report">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+                </svg>
+                <span>Copy</span>
+              </button>
+              <button class="action-btn primary" id="newSearchBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New Research</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+              <span class="stat-value" id="statSources">—</span>
+              <span class="stat-label">Sources</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statClaims">—</span>
+              <span class="stat-label">Claims</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statConflicts">—</span>
+              <span class="stat-label">Conflicts</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-value" id="statTime">—</span>
+              <span class="stat-label">Duration</span>
+            </div>
+          </div>
+
+          <!-- Report Body -->
+          <div class="report-body" id="reportBody"></div>
+
+          <!-- Sources Accordion -->
+          <details class="sources-accordion" id="sourcesAccordion">
+            <summary class="sources-summary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round">
+                <path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"></path>
+              </svg>
+              <span>Sources</span>
+              <span class="sources-count" id="sourcesCount">0</span>
+              <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </summary>
+            <div class="sources-list" id="sourcesList"></div>
+          </details>
+        </section>
+
+        <!-- Error Section -->
+        <section class="error-section hidden" id="errorSection">
+          <div class="error-card">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="1.5"
+              stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <h3>Research Failed</h3>
+            <p id="errorMessage">An unexpected error occurred.</p>
+            <button class="action-btn primary" id="retryBtn">Try Again</button>
+          </div>
+        </section>
+
+      </div>
+
+      <footer class="footer">
+        <p>Active Scholar v1.0 — Autonomous AI Research Agent</p>
+      </footer>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+
+</html>

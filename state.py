@@ -78,6 +78,13 @@ class ResearchRequest(BaseModel):
         le=5,
         description="Maximum number of search-analyse cycles.",
     )
+    mode: Literal["quick", "deep"] = Field(
+        default="quick",
+        description=(
+            "quick: fast report (~30s, search snippets + 1 LLM call). "
+            "deep: thorough analysis (~5min, full RAG pipeline)."
+        ),
+    )
 
 
 class ReportMetadata(BaseModel):

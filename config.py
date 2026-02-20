@@ -14,22 +14,22 @@ class ActiveScholarConfig(BaseSettings):
 
     # ── LLM ──────────────────────────────────────────────────────────────────
     google_api_key: str = ""
-    primary_model: str = "gemini-1.5-flash"
-    fallback_model: str = "gemini-1.5-pro"
+    primary_model: str = "gemini-2.5-flash"
+    fallback_model: str = "gemini-2.0-flash-lite"
     llm_temperature: float = 0.1
 
     # ── Search ───────────────────────────────────────────────────────────────
     tavily_api_key: str = ""
     serper_api_key: str | None = None
     max_search_rounds: int = 3
-    max_results_per_query: int = 10
+    max_results_per_query: int = 3
 
     # ── RAG / Embeddings ─────────────────────────────────────────────────────
-    embedding_model: str = "models/text-embedding-004"
+    embedding_model: str = "models/gemini-embedding-001"
     chunk_size: int = 1000
     chunk_overlap: int = 200
     chroma_persist_dir: str = "./active_scholar_db"
-    retrieval_top_k: int = 20
+    retrieval_top_k: int = 8
     relevance_threshold: float = 0.45
 
     # ── Credibility ──────────────────────────────────────────────────────────

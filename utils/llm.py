@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 _client: genai.Client | None = None
 _last_call_ts: float = 0.0          # simple rate-limiter
-MIN_CALL_INTERVAL = 6.0             # seconds between calls (free tier ≈ 10 RPM)
+MIN_CALL_INTERVAL = 2.0             # seconds between calls (free tier ≈ 15 RPM)
 
 
 def _get_client() -> genai.Client:
@@ -51,8 +51,8 @@ async def _rate_limit() -> None:
 
 
 @retry(
-    stop=stop_after_attempt(15),
-    wait=wait_exponential(multiplier=10, min=10, max=300),
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=5, min=5, max=60),
     retry=retry_if_exception_type(Exception),
     reraise=True,
 )
