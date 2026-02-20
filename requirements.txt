@@ -1,3 +1,5 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
 langgraph>=0.2.0
 langchain-core>=0.3.0
 langchain-huggingface>=0.1.0
@@ -9,7 +11,7 @@ tavily-python>=0.4.0
 httpx>=0.27.0
 beautifulsoup4>=4.12.0
 trafilatura>=1.8.0
-lxml[html_clean]
+lxml<5.2.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 fastapi>=0.110.0
