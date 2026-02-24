@@ -12,7 +12,6 @@ from uuid import uuid4
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 from graph import graph
 from quick_report import generate_quick_report
@@ -47,7 +46,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
 
 # In-memory job store (swap for Redis / DB in production)
 _jobs: dict[str, ResearchReport | str] = {}
@@ -176,11 +175,7 @@ async def health():
     return {"status": "ok"}
 
 
-@app.get("/")
-async def serve_frontend():
-    """Serve the web frontend."""
-    from fastapi.responses import FileResponse
-    return FileResponse("frontend/index.html")
+
 
 
 @app.get("/reports")

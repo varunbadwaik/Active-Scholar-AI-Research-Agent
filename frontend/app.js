@@ -2,7 +2,7 @@
    Active Scholar — Frontend Application Logic
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const API_BASE = window.location.origin;
+const API_BASE = 'https://active-scholar-ai-research-agent.onrender.com';
 const POLL_INTERVAL = 3000; // ms
 
 // ── DOM References ──────────────────────────────────────────────────────────
